@@ -21,6 +21,21 @@ function convertToJSX(parsedHtml) {
         case 'for':
           name = 'htmlFor';
           break;
+        case 'autocomplete':
+          name = 'autoComplete';
+          break;
+        case 'tabindex':
+          name = 'tabIndex';
+          break;
+        case 'maxlength':
+          name = 'maxLength';
+          break;
+        case 'enctype':
+          name = 'encType';
+          break;
+        case 'accept-charset':
+          name = 'acceptCharset';
+          break;
         case 'style':
           // Convert inline styles from string to object
           const styleObj = {};
@@ -37,9 +52,21 @@ function convertToJSX(parsedHtml) {
           break;
       }
       
-      // Handle event handlers
-      if (name.startsWith('on')) {
+      // Special handling for ARIA attributes
+      if (name.startsWith('aria-')) {
+        // Preserve aria attributes exactly as they are
         name = name.toLowerCase();
+        // Convert string "true"/"false" to actual booleans for React
+        if (value === 'true' || value === 'false') {
+          value = value === 'true';
+        }
+      }
+      
+      // Handle event handlers, but preserve onsubmit
+      if (name.startsWith('on') && name !== 'onsubmit') {
+        name = name.toLowerCase().replace(/^on[a-z]/, (match) => 
+          'on' + match.charAt(2).toUpperCase()
+        );
       }
 
       // Only add the attribute if it has a real value
@@ -88,6 +115,9 @@ function convertToJSX(parsedHtml) {
         if (value === true) return key;
         if (typeof value === 'object') {
           return `${key}={${JSON.stringify(value)}}`;
+        }
+        if (typeof value === 'function') {
+          return `${key}={${value.toString()}}`;
         }
         if (value === '') return '';
         return `${key}="${value}"`;

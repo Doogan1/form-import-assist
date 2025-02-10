@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import FormComponent from './formComponent';
+import FormComponent from './Land_Division_PortalComponent';
 
 // This will be where we import and showcase our converted component
 function App() {
@@ -19,6 +19,7 @@ function App() {
         <FormComponent />
       </main>
     </div>
+
   );
 }
 
